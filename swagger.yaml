@@ -1,0 +1,746 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Quran_Reflect_API
+  description: The API for the Quran_Reflect Application project
+  contact:
+    name: Al-Quran
+    url: https://alquran.com
+    email: al.quran@gmail.com
+servers:
+  - url: http://localhost:4000/api/v1
+    description: Dev
+  
+    
+tags:
+  - name: Developers
+    description: Operations available to regular developers
+  - name: user
+    description: users Endpoints (Admin only)
+paths:
+  /auth/signup:
+    post:
+      description: create a new account
+      tags:
+        - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Quranic verse
+                email:
+                  type: string
+                  example: quranic@al.quran.com
+                password:
+                  type: string
+                  example: 123456
+              required:
+                - name
+                - email
+                - password
+      responses:
+        "201":
+          description: Signup sucessful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 201
+                  message:
+                    type: string
+                    example: Signup successful
+                  data:
+                    type: object
+                    properties:
+                      access_token:
+                        example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+                  links:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        example: '/auth/signup'
+                      signin:
+                        type: string
+                        example: '/auth/signin'
+        "400":
+          $ref: '#/components/responses/400'
+        '500':
+          $ref: "#/components/responses/500"
+  /auth/signin:
+    post:
+      description: Login to your account
+      tags:
+        - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: quranic@al.quran.com
+                password:
+                  type: string
+                  example: 123456
+              required:
+                - email
+                - password
+      responses:
+        "201":
+          description: Signin sucessful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 201
+                  message:
+                    type: string
+                    example: Signin successful
+                  data:
+                    type: object
+                    properties:
+                      access_token:
+                        example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+                  links:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        example: '/auth/signin'
+        "400":
+          $ref: '#/components/responses/400'
+        '500':
+          $ref: "#/components/responses/500"
+  /searching:
+    get:
+      tags: [search]
+      operationId: querySearch
+      parameters: 
+        - $ref: '#/components/parameters/querySearch'
+      responses:
+        '200':
+          description: This is a simple search function.
+  /send:
+    post:
+      tags: 
+        - Email Service api
+        - admin Developers
+      summary : send email with attachements
+      description: send an email to support
+      responses:
+        '201':
+          description: sucessfully send email
+        '400':
+          description: 'invalid input,object invalid'
+      requestBody:
+        content:
+          '/application':
+              schema:
+                $ref: "#/components/schemas/mailSchema"
+        description : Email to send 
+  '/quranic_reflect':
+    get:
+      tags: [Quranic_Reflect]
+      description: Retrive all published Quranic_reflect
+      parameters: 
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
+        - $ref: '#/components/parameters/sortTypeParam'
+        - $ref: '#/components/parameters/sortByParam'
+        - $ref: '#/components/parameters/searchParam'
+      responses:
+        '200':
+          description: Return a list of quranic_reflect
+          content:
+            'application/json':
+             schema:
+              type: object
+              properties:
+                data:
+                  type: array
+                  items:
+                   allOf:
+                      - type: object
+                        properties:
+                          id:
+                            type: integer
+                            format: int32
+                            example : 1
+                          title:
+                            type: string
+                            example: first quranic_reflect
+                          cover:
+                            type: string
+                            format: url
+                            example : https://s3.aws.com/quranic_reflect/124.jpg
+                          author:
+                            $ref: "#/components/schemas/AuthorDTO"
+                          link:
+                            type: string
+                            format: url
+                            example: '/quranic_reflect/1'
+                        required: [id, title, author]
+                      - $ref: "#/components/schemas/Timestamp"
+                pagination:
+                  $ref: '#/components/schemas/Pagination'
+                links:
+                  type: object
+                  properties:
+                    self:
+                      type: string
+                      format: url
+                      example : '/quranic_reflect?page=2&limit=10'
+                    next:
+                      type: string
+                      format: url
+                      example : '/quranic_reflect?page=3&limit=10'
+                    prev:
+                      type: string
+                      format: url
+                      example : '/quranic_reflect?page=1&limit=10'
+        '400':
+          $ref: "#/components/responses/400"
+        '500':
+          $ref: "#/components/responses/500"
+    post:
+      operationId: createPost
+      security: 
+        - bearerAuth: []
+      tags: [Quranic_Reflect]
+      description: Create a new quranic_reflect
+      requestBody:
+        description: To Create a new quranic_reflect user must need to provide valid data
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: body of the first quranic_reflect
+                body:
+                  type: string
+                  format: text
+                  example: first quranic_reflect
+                cover:
+                  type: string
+                  format: url
+                  example: https://s3.aws.example.com/23nds
+                status:
+                  type: string
+                  enum: [draft, published]
+                  example: draft
+              required: [title, body]
+      responses:
+          '201':
+            description: Successfully Created a new quranic_reflect
+            content:
+              "aplication.json":
+                schema:
+                  $ref: '#/components/schemas/Quranic_reflectCreateDTO'
+          '400':
+            $ref: '#/components/responses/400'
+          '401':
+            $ref: '#/components/responses/401'
+          '500':
+            $ref : '#/components/responses/500'
+  '/quranic_reflect/{id}':
+    get:
+      tags: [Quranic_Reflect]
+      description: Fetch a single quranic_reflect
+      parameters: 
+        - $ref: "#/components/parameters/idPathParam"
+        - in: query
+          name: expand
+          description: expand author and comment object
+          schema:
+            type: string
+            example: 'author'
+      responses:
+        '200':
+          description: 'single quranic_reflect view'
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  data:
+                    allOf:
+                      - $ref: '#/components/schemas/Quranic_reflect'
+                      - type: object
+                        properties:
+                          author:
+                            $ref: '#/components/schemas/AuthorDTO'
+                      
+                  links:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        example: '/quranic_reflect/1'
+                      author:
+                        type: string
+                        example: '/quranic_reflects/1/author'
+
+        '400':
+          $ref: '#/components/responses/400'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+    put:
+      security: 
+        - bearerAuth: []
+      tags: [Quranic_Reflect]
+      description: Create or Update entire quranic_reflect
+      parameters: 
+        - $ref: '#/components/parameters/idPathParam'
+      requestBody:
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    format: int32
+                    example: 1
+                  title:
+                    type: string
+                    example: quranic_reflect title
+                  body:
+                    type: string
+                    format: text
+                    example: quranic_reflect title
+                  cover:
+                    type: string
+                    format: url
+                    example: 'https://s3.aw3.com/22156w34'
+                  status:
+                    type: string
+                    enum: [draft, published]
+                    example: draft
+                required: [title, body]
+      responses:
+        '200':
+          description: 'sucessfully Updated'
+          content: &quranic_reflect_update_content
+            'application/json':
+              schema:
+                $ref : '#/components/schemas/Quranic_reflectUpdateDTO'
+        '201':
+          description: 'Sucessfully Created'
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/Quranic_reflectCreateDTO'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '500':
+          $ref: '#/components/responses/500'
+    patch:
+      security: 
+        - bearerAuth: []
+      tags: [Quranic_Reflect]
+      description: Selected Update quranic_reflect
+      parameters: 
+        - $ref: '#/components/parameters/idPathParam'
+      requestBody:
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  title:
+                    type: string
+                    example: quranic_reflect title
+                  body:
+                    type: string
+                    format: text
+                    example: quranic_reflect title
+                  cover:
+                    type: string
+                    format: url
+                    example: 'https://s3.aw3.com/22156w34'
+                  status:
+                    type: string
+                    enum: [draft, published]
+                    example: draft
+      responses:
+        '200':
+          description: 'sucessfully Updated'
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/Quranic_reflectUpdateDTO'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+    delete:
+      security:
+        - bearerAuth: []
+      tags: [quranic_reflect]
+      description: delete quranic_reflect u id
+      parameters:
+        - $ref: '#/components/parameters/idPathParam'
+      responses:
+        '204':
+          description: 'Article deleted successfully'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Quranic_reflect:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: integer
+              format: int32
+              example: 1
+            authorId:
+              type: integer
+              format: int32
+              example: 1
+            postId:
+              type: integer
+              format: int32
+              example: 1
+            body : 
+              type: string
+              format: text
+              example: The body of the Quranic_reflect
+            status:
+              type: string
+              enum: [public, private]
+              example: public
+          required: [id, authorId, articleId, body,status]
+        - $ref: '#/components/schemas/Timestamp'
+    Quranic_reflectCreateDTO:
+     type: object
+     properties:
+        code:
+          type: integer
+          format: int32
+          example: 201
+        message:
+          type: string
+          example: 'Quranic_reflect created successfully'
+        data:
+         $ref: '#/components/schemas/Quranic_reflect'
+        links:
+          type: object
+          properties:
+            self:
+              type: string
+              format: url
+              example: '/Quranic_reflect/1/'
+            author:
+              type: string
+              format: url
+              example: '/Quranic_reflect/1/author'
+    Quranic_reflectUpdateDTO:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+          example: 200
+        message:
+          type: string
+          example: Quranic_reflect updated successfully
+        data:
+          $ref: '#/components/schemas/Quranic_reflect'
+        links:
+          type: object
+          properties:
+            self:
+              type: string
+              example: '/Quranic_reflect/1'
+    mailSchema:
+      type: object
+      required:
+      - from
+      - to
+      - subject
+      - msg
+      - attachments
+      properties:
+        from:
+          type: string
+          format: email adress
+          example: emailservice@quran.com
+        to:
+          type: string
+          format: email adress
+          example: support@quran.com
+        subject:
+          type: string
+          format: text
+          example: Usefull information
+        msg:
+          type: string
+          format: text
+          example: Some usefull text
+        attachments:
+          type: object
+          format: json
+          example: file.json
+    Timestamp:
+      type: object
+      properties:
+        createdAt:
+          type: string
+          format: datetime
+        updatedAt:
+          type: string
+          format: datetime
+      required: [createdAt, updatedAt]
+    AuthorDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+          example: 1
+        name:
+          type: string
+          example: 'Askur'
+          required: [id, name]
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          format: int32
+          example: 10
+        limit:
+          type: integer
+          format: int32
+          example: 20
+        next:
+          type: integer
+          format: int32
+          example: 30
+        prev:
+          type: integer
+          format: int32
+          example: 40
+        totalPage:
+          type: integer
+          format: int32
+          example: 50
+        totalItems:
+          type: integer
+          format: int32
+          example: 60
+      required :
+         - page
+         - limit
+         - totalPage
+         - totalItems
+  responses:
+    "500":
+      description: "Internal Server error"
+      content:
+        'application/json':
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+                example: 500
+              error:
+                type: string
+                example: Internal Server error
+              mesage:
+                type: string
+                example: we are sorry please try again letter 
+    "400":
+      description: "Bad Request"
+      content:
+        'application/json':
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+                example: 400
+              error:
+                type: string
+                example: Bad Request
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    field:
+                      type: string
+                      example: email
+                    message:
+                      type: string
+                      example: invalid email
+                    in:
+                      type: string
+                      enum: [query, body]
+                      example: body
+    "401":
+      description: "Unauthorized error"
+      content:
+        'application/json':
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+                example: 401
+              error:
+                type: string
+                example: Unauthorized error
+              mesage:
+                type: string
+                example: you dont have the right permission 
+    "404":
+      description: "Resources not found"
+      content:
+        'application/json':
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+                example: 404
+              error:
+                type: string
+                example: not found
+              mesage:
+                type: string
+                example: requestet not found
+  parameters:
+    pageParam:
+      in: query
+      name: page
+      description: current page number
+      schema:
+        type: integer
+        format: int32
+        example: 1
+    limitParam:
+      in: query
+      name: limit
+      description: maximum items to be returned
+      schema:
+        type: integer
+        format: int32
+        example: 10
+    sortTypeParam:
+      in: query
+      name: sort_type
+      description: the type of sort ( asc or dsc )
+      schema:
+        type: string
+        enum: [asc, dsc]
+        example: dsc
+    sortByParam:
+      in: query
+      name: sort_by
+      description: sort key
+      schema:
+        type: string
+        example: updatedAt
+    searchParam:
+      in: query
+      name: search
+      description: search term
+      schema:
+        type: string
+        example: title
+    idPathParam:
+      in: path
+      name: id
+      required: true
+      description: Quranic_reflect ID
+      schema:
+        type: integer
+        format: int32
+        example: 1
+    querySearch:
+      in: query
+      name: querySearch
+      description: searchTerm
+      schema:
+        type: string
+        example:
+          application/json:
+            querySearch:  
+              - Quranic_reflectid: '/Quranic_reflect/The cave,chapter-18,verse-16'
+                htext: >-
+                  'Subhanallah how the Quran speaks to us through our varying circumstances. A verse can speak directly to your grief, your longing, your rejection, or your exact situation. Whatever circumstance you’re in, seek Him. A friend gently reminded me today of this verse and how many caves we know of in our tradition. Think of the cave of hira where revelation came, the cave of thawr where Abukbar and our Beloved ﷺ took refuge, and the cave of the youth in surah Alkahf who made a move for Allah’s sake. They all retreated for His sake. And sometimes it is necessary for us to retreat. Slow it down. Take a break. Reflect on what really matters. Move towards Allah because one day it will be just you and Him. How many of our moments in dunya are helping us for our aakhira? It is this verse that compels us to retreat to the cave now to find His mercy before we ourselves are retreated into our graves and hoping for His mercy. We must seek that mercy now so it can one day never escape us. May we be seekers of that mercy and may our lives be a testament for us and not against us. Ameen'
+                title: >-
+                  Tafsir of The cave( Khaf)
+                date: 2023-09-12
+                citecount: 1
+                report: Not Reportable
+                place: online
+              - Quranic_reflectid: '/Quranic_reflect/The Fatiha,chapter-01,verse-01'
+                htext: >-
+                  'Subhanallah how the Quran speaks to us through our varying circumstances. A verse can speak directly to your grief, your longing, your rejection, or your exact situation. Whatever circumstance you’re in, seek Him. A friend gently reminded me today of this verse and how many caves we know of in our tradition. Think of the cave of hira where revelation came, the cave of thawr where Abukbar and our Beloved ﷺ took refuge, and the cave of the youth in surah Alkahf who made a move for Allah’s sake. They all retreated for His sake. And sometimes it is necessary for us to retreat. Slow it down. Take a break. Reflect on what really matters. Move towards Allah because one day it will be just you and Him. How many of our moments in dunya are helping us for our aakhira? It is this verse that compels us to retreat to the cave now to find His mercy before we ourselves are retreated into our graves and hoping for His mercy. We must seek that mercy now so it can one day never escape us. May we be seekers of that mercy and may our lives be a testament for us and not against us. Ameen'
+          title: >-
+            Tafsir of The Al-fatiha
+          date: 2023-09-12
+          citecount: 2
+          report: Not Reportable
+          place: online
+        
+        properties:
+          docid:
+            type: string
+          htext:
+            type: string
+          date:
+            type: string
+          citecount:
+            type: integer
+            format: int32
+      
+        required:
+          - docid
+          - htext
+          - title
+          - date
+          - citecount
+          - status
