@@ -1,0 +1,15 @@
+{
+"users":[],
+"article":[
+{
+    "id": 1,
+    "authorId": 1,
+    "title": "First quranic_reflect",
+    "body": "Body of the first quranic_reflect",
+    "status": "published",
+    "createdAt": 1694539662558,
+    "updatedAt": 1694539662558
+}
+],
+"comments":[]
+}
