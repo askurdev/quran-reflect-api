@@ -45,6 +45,19 @@ app.get("api/v1/quranic_reflect", async (req, res) => {
 
   // 3. generate necessary responses
 
+  const transformedQuranic_reflect = quranic_reflect.map((quranic_reflect) => {
+    const transformed = { ...quranic_reflect };
+    transformed.author = {
+      id: transformed.authorId,
+      //Todo author name
+    };
+    transformed.link = `/quranic_reflect/${transformed.id}`;
+    delete transformed.body;
+    delete transformed / authorId;
+
+    return transformed;
+  });
+
   const responses = {
     data: quranic_reflect,
     pagination: {
