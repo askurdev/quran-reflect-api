@@ -1,37 +1,4 @@
 {
-"users":[],
-"quranic_reflects":[
-{
-    "id": 1,
-    "authorId":1,
-    "title": "First quranic_reflects",
-    "body": "Body of the first quranic_reflects",
-    "status": "published",
-    "createdAt": "2023-09-13T11:01:00.120Z",
-    "updatedAt": "2023-09-13T11:01:00.120Z"
-    
-},
-{
-    "id": 2,
-    "authorId":2,
-    "title": "Second quranic_reflects",
-    "body": "Body of the second quranic_reflects",
-    "status": "published",
-    "createdAt": "2023-09-13T11:01:00.120Z",
-    "updatedAt": "2023-09-13T11:01:00.120Z"
-    
-},
-{
-    "id": 3,
-    "authorId": 3,
-    "title": "3rd quranic_reflects",
-    "body": "Body of the 3rd quranic_reflects",
-    "status": "published",
-    "createdAt": "2023-09-14T16:46:44.961Z",
-    "updatedAt": "2023-09-14T16:46:44.961Z"
-    
-}
-
-],
-"":[]
+    "user":[],
+    "quranic_reflect":[]
 }

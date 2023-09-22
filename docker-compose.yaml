@@ -1,0 +1,83 @@
+# version: "3.8"
+# services:
+#   mongo:
+#     image: mongo:latest
+#     container_name: mongodb
+#     restart: always
+#     environment:
+#       MONGO_INITDB_ROOT_USERNAME: quran-reflect-api-app
+#       MONGO_INITDB_ROOT_PASSWORD: ask232141
+#       AUTH: admin
+#     ports:
+#       - "27017:27017"
+#     volumes:
+#       - "my_mongodb_data:/data/db"
+
+#   #Mongo Express
+#   mongo-express:
+#     image: mongo-express:latest
+#     container_name: mongo express
+#     restart: always
+#     environment:
+#       ME_CONFIG_MONGODB_ADMINUSERNAME: quran-reflect-api-app
+#       ME_CONFIG_MONGODB_ADMINPASSWORD: ask232141
+#       ME_CONFIG_MONGODB_URL: mongodb://quran-reflect-api-app:ask232141@mongo:27017//
+#     ports:
+#       - "8081:8081"
+#     depends_on:
+#       - mongodbd
+
+# volumes:
+#   my_mongodb_data:
+#     driver: local
+
+version: '3.3'
+
+# Usage:
+#   docker stack deploy -c stack.yml mongo
+# or 
+#   docker-compose -f stack.yml up
+
+services:
+
+  mongo:
+    image: mongo:latest
+    restart: always
+    container_name: mongo-docker
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: quran-reflect-api-app
+      MONGO_INITDB_ROOT_PASSWORD: ask232141
+      #MONGODB_AUTH_DATABASE: admin
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./workspace:/workspace
+      - type: volume
+        source: mongodb_data_volume
+        target: /data/db
+        
+  mongo-express:
+    image: mongo-express:latest
+    container_name: mongo-express
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_BASICAUTH_USERNAME: QuranReflectAPI
+      ME_CONFIG_BASICAUTH_PASSWORD: ask232141
+      #ME_CONFIG_MONGODB_AUTH_DATABASE: admin
+      ME_CONFIG_MONGODB_ADMINUSERNAME: quran-reflect-api-app
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ask232141
+      ME_CONFIG_MONGODB_URL: mongodb://quran-reflect-api-app:ask232141@mongo:27017//
+    depends_on:
+      - mongo
+
+volumes:
+  mongodb_data_volume:
+    driver: local    
+    
+
+
+
+

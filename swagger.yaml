@@ -1,10 +1,10 @@
 openapi: 3.0.0
 info:
   version: 1.0.0
-  title: quranic_reflects
+  title: quranic_reflect
   description: The API for the Quran_Reflect Application project
   contact:
-    name: quranic-reflects
+    name: quranic-reflect
     url: https://quranicreflect.com
     email: quranreflect@quranreflect.com
 servers:
@@ -16,7 +16,7 @@ servers:
 tags:
   - name: Developers
     description: Operations available to regular developers
-  - name: quranic_reflects
+  - name: quranic_reflect
     description: users Endpoints (Admin only)
 paths:
   /auth/signup:
